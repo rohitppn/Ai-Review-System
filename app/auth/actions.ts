@@ -1,0 +1,28 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { supabaseServer } from "@/lib/supabase/server";
+
+export async function loginAction(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const next = String(formData.get("next") ?? "/dashboard");
+
+  const supabase = await supabaseServer();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return redirect(`/auth/login?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/", "layout");
+  redirect(next);
+}
+
+export async function logoutAction() {
+  const supabase = await supabaseServer();
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  redirect("/auth/login");
+}

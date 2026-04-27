@@ -1,0 +1,184 @@
+import { CATEGORIES } from "@/lib/categories";
+import { SOCIALS, type StoreSocials } from "@/lib/social";
+import { getIconById } from "@/components/SocialIcons";
+
+const QR_DESIGNS: {
+  id: "classic" | "sunset" | "midnight";
+  label: string;
+  preview: { dark: string; light: string };
+}[] = [
+  { id: "classic", label: "Classic", preview: { dark: "#0f0f14", light: "#ffffff" } },
+  { id: "sunset", label: "Sunset", preview: { dark: "#e11d48", light: "#fff7ed" } },
+  { id: "midnight", label: "Midnight", preview: { dark: "#fbbf24", light: "#0f0f14" } },
+];
+
+export default function StoreFormFields({
+  defaults,
+}: {
+  defaults?: {
+    name?: string;
+    category?: string;
+    logo_url?: string | null;
+    google_review_url?: string | null;
+    keywords?: string[];
+    qr_design?: string;
+  } & Partial<StoreSocials>;
+}) {
+  const d = defaults ?? {};
+  const qrDesign = d.qr_design ?? "classic";
+
+  return (
+    <>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Store name</label>
+      <input
+        name="name"
+        type="text"
+        required
+        maxLength={80}
+        defaultValue={d.name ?? ""}
+        className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+        placeholder="Sunny Cafe"
+      />
+
+      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+      <select
+        name="category"
+        defaultValue={d.category ?? "cafe"}
+        className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 bg-white focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+      >
+        {CATEGORIES.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.emoji}  {c.label}
+          </option>
+        ))}
+      </select>
+
+      <label className="block text-sm font-medium text-gray-700 mb-1">Upload logo</label>
+      <input
+        name="logo_file"
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+        className="w-full text-sm text-gray-700 mb-2 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200"
+      />
+      <p className="text-xs text-gray-500 mb-3">
+        PNG / JPG / WEBP / SVG, max 3 MB. Square works best. Leave empty to use a default.
+      </p>
+
+      <details className="mb-4">
+        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+          ...or paste a logo URL instead
+        </summary>
+        <input
+          name="logo_url"
+          type="url"
+          defaultValue={d.logo_url ?? ""}
+          className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+          placeholder="https://yourstore.com/logo.png"
+        />
+      </details>
+
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Google review URL <span className="text-red-500">*</span>
+      </label>
+      <input
+        name="google_review_url"
+        type="url"
+        required
+        defaultValue={d.google_review_url ?? ""}
+        className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+        placeholder="https://search.google.com/local/writereview?placeid=..."
+      />
+      <p className="text-xs text-gray-500 mb-4">
+        Find Place ID at{" "}
+        <a
+          className="underline"
+          href="https://developers.google.com/maps/documentation/places/web-service/place-id"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Place ID Finder
+        </a>
+        , then format:{" "}
+        <code className="bg-gray-100 px-1 rounded text-[10px]">.../writereview?placeid=YOUR_ID</code>
+      </p>
+
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        SEO keywords <span className="text-gray-400 font-normal">(comma separated)</span>
+      </label>
+      <input
+        name="keywords"
+        type="text"
+        maxLength={500}
+        defaultValue={(d.keywords ?? []).join(", ")}
+        className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+        placeholder="best biryani delhi, north indian dining, family restaurant"
+      />
+      <p className="text-xs text-gray-500 mb-5">
+        AI weaves these naturally into reviews to help your store rank higher in Google search.
+        Use keywords customers actually type — your city, cuisine, niche.
+      </p>
+
+      <p className="text-sm font-medium text-gray-700 mb-1">
+        Social media <span className="text-gray-400 font-normal">(optional)</span>
+      </p>
+      <p className="text-xs text-gray-500 mb-3">
+        Customers see icons on the Thanks page after they leave a review. Empty links are hidden.
+      </p>
+      <div className="space-y-2 mb-6">
+        {SOCIALS.map((s) => {
+          const defaultValue =
+            (d as Record<string, string | null | undefined>)[s.field] ?? "";
+          return (
+            <div key={s.id} className="flex items-center gap-2">
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-white flex-shrink-0 shadow-sm"
+                style={{ background: s.background }}
+                aria-hidden="true"
+              >
+                {getIconById(s.id, "w-4 h-4")}
+              </div>
+              <input
+                name={s.field}
+                type="url"
+                defaultValue={defaultValue ?? ""}
+                aria-label={s.label}
+                className="flex-1 min-w-0 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+                placeholder={s.placeholder}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <label className="block text-sm font-medium text-gray-700 mb-2">QR code design</label>
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {QR_DESIGNS.map((opt) => (
+          <label
+            key={opt.id}
+            className="cursor-pointer relative"
+          >
+            <input
+              type="radio"
+              name="qr_design"
+              value={opt.id}
+              defaultChecked={qrDesign === opt.id}
+              className="peer sr-only"
+            />
+            <div className="rounded-xl border-2 border-gray-200 peer-checked:border-rose-500 peer-checked:bg-rose-50 transition-all p-3 text-center">
+              <div
+                className="w-full aspect-square rounded-md mb-2 flex items-center justify-center"
+                style={{ background: opt.preview.light, border: "1px solid #e5e7eb" }}
+              >
+                <div
+                  className="w-6 h-6 rounded-sm"
+                  style={{ background: opt.preview.dark }}
+                />
+              </div>
+              <p className="text-xs font-medium text-gray-700">{opt.label}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+    </>
+  );
+}
