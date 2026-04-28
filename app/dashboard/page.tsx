@@ -78,8 +78,36 @@ export default async function DashboardPage() {
           </form>
         </header>
 
-        {/* Owner self-service: add another store via onboarding */}
-        {!me?.isAdmin && (
+        {/* Owner self-service: pending banner OR add-another CTA */}
+        {!me?.isAdmin && pending.length > 0 && (
+          <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-rose-50 border border-amber-200 p-6 mb-6 animate-fade-in">
+            <div className="flex items-start gap-4">
+              <div className="text-3xl flex-shrink-0">⏳</div>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900">Approval pending</p>
+                <p className="text-sm text-gray-700 mt-1 leading-relaxed">
+                  We're verifying your payment screenshot. Your QR code will go
+                  live within <b>2-3 hours</b> — you'll get a confirmation on
+                  WhatsApp.
+                </p>
+                <p className="text-xs text-gray-500 mt-2">
+                  Didn't send the screenshot yet?{" "}
+                  <a
+                    href={`https://wa.me/917717766954?text=${encodeURIComponent(
+                      `Hi, I just signed up on Starly with email "${me?.email}" and paid ₹999. Here's my payment screenshot.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-rose-600 underline font-medium"
+                  >
+                    Send it now →
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {!me?.isAdmin && pending.length === 0 && (
           <Link
             href="/onboarding"
             className="block rounded-2xl border-2 border-dashed border-gray-300 hover:border-rose-400 hover:bg-white/60 transition-all p-6 text-center mb-6"

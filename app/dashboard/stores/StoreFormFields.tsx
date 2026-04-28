@@ -1,5 +1,5 @@
 import { CATEGORIES } from "@/lib/categories";
-import { SOCIALS, type StoreSocials } from "@/lib/social";
+import { SOCIALS, type StoreSocials, whatsappPhoneFromUrl } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
 
 const QR_DESIGNS: {
@@ -126,8 +126,10 @@ export default function StoreFormFields({
       </p>
       <div className="space-y-2 mb-6">
         {SOCIALS.map((s) => {
-          const defaultValue =
+          const rawValue =
             (d as Record<string, string | null | undefined>)[s.field] ?? "";
+          const isWhatsapp = s.id === "whatsapp";
+          const defaultValue = isWhatsapp ? whatsappPhoneFromUrl(rawValue) : (rawValue ?? "");
           return (
             <div key={s.id} className="flex items-center gap-2">
               <div
@@ -139,16 +141,20 @@ export default function StoreFormFields({
               </div>
               <input
                 name={s.field}
-                type="url"
-                defaultValue={defaultValue ?? ""}
+                type={isWhatsapp ? "tel" : "url"}
+                inputMode={isWhatsapp ? "numeric" : undefined}
+                defaultValue={defaultValue}
                 aria-label={s.label}
                 className="flex-1 min-w-0 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
-                placeholder={s.placeholder}
+                placeholder={isWhatsapp ? "9876543210" : s.placeholder}
               />
             </div>
           );
         })}
       </div>
+      <p className="text-[11px] text-gray-500 -mt-3 mb-5">
+        WhatsApp: enter your number only (10 digits for India, or with country code).
+      </p>
 
       <label className="block text-sm font-medium text-gray-700 mb-2">QR code design</label>
       <div className="grid grid-cols-3 gap-3 mb-6">
