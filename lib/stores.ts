@@ -6,14 +6,17 @@ export type Store = StoreSocials & {
   slug: string;
   name: string;
   category: string;
+  custom_category_label: string | null;
   logo_url: string | null;
   google_review_url: string | null;
   keywords: string[];
   qr_design: string;
+  status: "pending" | "active" | "rejected";
 };
 
 const SELECT = `
-  id, slug, name, category, logo_url, google_review_url, keywords, qr_design,
+  id, slug, name, category, custom_category_label, logo_url, google_review_url,
+  keywords, qr_design, status,
   instagram_url, facebook_url, twitter_url, youtube_url, whatsapp_url
 `;
 
