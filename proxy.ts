@@ -28,17 +28,11 @@ export async function proxy(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = req.nextUrl.pathname;
-  const isDashboard = path.startsWith("/dashboard");
-  const isAuthPage = path.startsWith("/auth/login");
+  const isProtected = path.startsWith("/dashboard") || path.startsWith("/onboarding");
+  const isAuthPage =
+    path.startsWith("/auth/login") || path.startsWith("/auth/signup");
 
-  // Public signup is disabled — bounce any leftover /auth/signup hits to login.
-  if (path.startsWith("/auth/signup")) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
-  }
-
-  if (isDashboard && !user) {
+  if (isProtected && !user) {
     const url = req.nextUrl.clone();
     url.pathname = "/auth/login";
     url.searchParams.set("next", path);

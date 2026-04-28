@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { loginAction } from "../actions";
+import { signupAction } from "../actions";
 
-export default async function LoginPage({
+export default async function SignupPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; next?: string }>;
@@ -10,15 +10,17 @@ export default async function LoginPage({
   return (
     <main className="min-h-screen flex items-center justify-center px-5 py-10">
       <form
-        action={loginAction}
+        action={signupAction}
         className="w-full max-w-sm bg-white rounded-3xl shadow-xl shadow-rose-200/30 p-8 animate-slide-up"
       >
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-500 text-white text-2xl font-bold shadow-lg mb-3">
             ★
           </div>
-          <h1 className="text-2xl font-bold">Sign in</h1>
-          <p className="text-sm text-gray-500 mt-1">Access your dashboard</p>
+          <h1 className="text-2xl font-bold">Create your account</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Then set up your store in under 5 minutes
+          </p>
         </div>
 
         {error && (
@@ -27,7 +29,7 @@ export default async function LoginPage({
           </p>
         )}
 
-        <input type="hidden" name="next" value={next ?? "/dashboard"} />
+        <input type="hidden" name="next" value={next ?? "/onboarding"} />
 
         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input
@@ -44,22 +46,24 @@ export default async function LoginPage({
           name="password"
           type="password"
           required
-          autoComplete="current-password"
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
-          placeholder="••••••••"
+          minLength={8}
+          autoComplete="new-password"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
+          placeholder="At least 8 characters"
         />
+        <p className="text-xs text-gray-500 mb-5">8 characters minimum</p>
 
         <button
           type="submit"
           className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all"
         >
-          Sign in
+          Create account →
         </button>
 
         <p className="text-center text-sm text-gray-500 mt-5">
-          New here?{" "}
-          <Link href="/auth/signup" className="text-rose-600 hover:underline font-medium">
-            Create account
+          Already have one?{" "}
+          <Link href="/auth/login" className="text-rose-600 hover:underline font-medium">
+            Sign in
           </Link>
         </p>
       </form>
