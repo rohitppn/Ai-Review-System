@@ -59,3 +59,28 @@ export type StoreSocials = {
   youtube_url: string | null;
   whatsapp_url: string | null;
 };
+
+// WhatsApp is special — owners enter a phone number, we store as a wa.me URL.
+// Accepts: bare digits, +91 prefixed, spaces/dashes, or a full wa.me URL (legacy).
+// Returns null if input is empty or unparseable.
+export function whatsappToUrl(input: string | null | undefined): string | null {
+  if (!input) return null;
+  const trimmed = String(input).trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed; // already a URL, keep as-is
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits.length < 8) return null;
+  // 10 digits = assume India, prepend 91. Anything 11+ = treat as already including country code.
+  const withCountry = digits.length === 10 ? `91${digits}` : digits;
+  return `https://wa.me/${withCountry}`;
+}
+
+// Inverse — pull the phone number out of a wa.me URL for displaying back in a
+// form input. Returns the raw input if it's already a phone number.
+export function whatsappPhoneFromUrl(value: string | null | undefined): string {
+  if (!value) return "";
+  const s = String(value).trim();
+  if (!s) return "";
+  const match = s.match(/wa\.me\/(\+?\d+)/i);
+  return match ? match[1] : s;
+}

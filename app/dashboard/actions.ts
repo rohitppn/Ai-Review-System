@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
+import { whatsappToUrl } from "@/lib/social";
 
 const QR_DESIGNS = ["classic", "sunset", "midnight"] as const;
 type QrDesign = (typeof QR_DESIGNS)[number];
@@ -45,7 +46,10 @@ const SOCIAL_FIELDS = [
 
 function parseSocials(formData: FormData): Record<(typeof SOCIAL_FIELDS)[number], string | null> {
   const out = {} as Record<(typeof SOCIAL_FIELDS)[number], string | null>;
-  for (const f of SOCIAL_FIELDS) out[f] = cleanString(formData.get(f));
+  for (const f of SOCIAL_FIELDS) {
+    const raw = cleanString(formData.get(f));
+    out[f] = f === "whatsapp_url" ? whatsappToUrl(raw) : raw;
+  }
   return out;
 }
 

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
+import { whatsappToUrl } from "@/lib/social";
 
 const QR_DESIGNS = ["classic", "sunset", "midnight"] as const;
 
@@ -47,7 +48,7 @@ export async function submitOnboardingAction(formData: FormData) {
     facebook_url: clean(formData.get("facebook_url")),
     twitter_url: clean(formData.get("twitter_url")),
     youtube_url: clean(formData.get("youtube_url")),
-    whatsapp_url: clean(formData.get("whatsapp_url")),
+    whatsapp_url: whatsappToUrl(clean(formData.get("whatsapp_url"))),
   };
 
   const delivery = {

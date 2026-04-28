@@ -351,24 +351,31 @@ export default function OnboardingWizard({
           {step === 4 && (
             <Card title="Social media links" subtitle="Optional. Customers see icons on the Thanks page after leaving a review.">
               <div className="space-y-2">
-                {SOCIALS.map((s) => (
-                  <div key={s.id} className="flex items-center gap-2">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0"
-                      style={{ background: s.background }}
-                    >
-                      {getIconById(s.id, "w-4 h-4")}
+                {SOCIALS.map((s) => {
+                  const isWhatsapp = s.id === "whatsapp";
+                  return (
+                    <div key={s.id} className="flex items-center gap-2">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0"
+                        style={{ background: s.background }}
+                      >
+                        {getIconById(s.id, "w-4 h-4")}
+                      </div>
+                      <input
+                        type={isWhatsapp ? "tel" : "url"}
+                        inputMode={isWhatsapp ? "numeric" : undefined}
+                        value={socials[s.field] ?? ""}
+                        onChange={(e) => setSocials({ ...socials, [s.field]: e.target.value })}
+                        placeholder={isWhatsapp ? "9876543210" : s.placeholder}
+                        className="input flex-1"
+                      />
                     </div>
-                    <input
-                      type="url"
-                      value={socials[s.field] ?? ""}
-                      onChange={(e) => setSocials({ ...socials, [s.field]: e.target.value })}
-                      placeholder={s.placeholder}
-                      className="input flex-1"
-                    />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+              <p className="text-xs text-gray-500 mt-3">
+                WhatsApp: enter your phone number only — we'll auto-build the chat link for you.
+              </p>
             </Card>
           )}
 
