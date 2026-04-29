@@ -21,6 +21,7 @@ export default async function OnboardingPage({
       gpayQrSrc="/gpay-qr.png"
       adminWhatsapp="917717766954"
       adminUpiId="rohitsharmabusy@oksbi"
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
     />
   );
 }
