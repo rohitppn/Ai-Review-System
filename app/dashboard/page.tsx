@@ -17,8 +17,12 @@ type StoreRow = {
   owner_id: string;
   status: "pending" | "active" | "rejected";
   submitted_at: string | null;
+  delivery_name: string | null;
   delivery_phone: string | null;
+  delivery_address: string | null;
   delivery_city: string | null;
+  delivery_state: string | null;
+  delivery_pincode: string | null;
   payment_amount_inr: number | null;
   created_at: string;
   owner_email?: string | null;
@@ -31,7 +35,7 @@ export default async function DashboardPage() {
   const { data: stores } = await supabase
     .from("stores")
     .select(
-      "id, name, slug, category, custom_category_label, owner_id, status, submitted_at, delivery_phone, delivery_city, payment_amount_inr, created_at"
+      "id, name, slug, category, custom_category_label, owner_id, status, submitted_at, delivery_name, delivery_phone, delivery_address, delivery_city, delivery_state, delivery_pincode, payment_amount_inr, created_at"
     )
     .order("created_at", { ascending: false });
 
@@ -244,9 +248,7 @@ function PendingCard({ store }: { store: StoreRow }) {
           View →
         </Link>
       </div>
-      <div className="text-xs text-gray-600 grid grid-cols-2 gap-1 mb-4">
-        <p>📞 {store.delivery_phone ?? "—"}</p>
-        <p>📍 {store.delivery_city ?? "—"}</p>
+      <div className="text-xs text-gray-600 grid grid-cols-2 gap-1 mb-3">
         <p>💸 ₹{store.payment_amount_inr ?? 999}</p>
         <p>
           ⏱ {store.submitted_at
@@ -254,6 +256,29 @@ function PendingCard({ store }: { store: StoreRow }) {
             : "—"}
         </p>
       </div>
+      {store.delivery_address && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 text-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-800 mb-1">
+            📦 Ship printed QR card to
+          </p>
+          <p className="font-semibold text-gray-900">
+            {store.delivery_name || store.owner_email}
+            {store.delivery_phone && (
+              <span className="font-normal text-gray-600">
+                {" "}· 📞 {store.delivery_phone}
+              </span>
+            )}
+          </p>
+          <p className="text-gray-700 mt-0.5 leading-snug">
+            {store.delivery_address}
+          </p>
+          <p className="text-gray-700 leading-snug">
+            {[store.delivery_city, store.delivery_state, store.delivery_pincode]
+              .filter(Boolean)
+              .join(", ")}
+          </p>
+        </div>
+      )}
       <div className="flex gap-2">
         <form action={approveStoreAction} className="flex-1">
           <input type="hidden" name="store_id" value={store.id} />

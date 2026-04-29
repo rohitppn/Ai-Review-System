@@ -21,6 +21,12 @@ type Store = {
   keywords: string[];
   qr_design: string;
   created_at: string;
+  delivery_name: string | null;
+  delivery_phone: string | null;
+  delivery_address: string | null;
+  delivery_city: string | null;
+  delivery_state: string | null;
+  delivery_pincode: string | null;
 };
 
 type Review = {
@@ -52,7 +58,7 @@ export default async function StoreDetailPage({
 
   const { data: store } = await supabase
     .from("stores")
-    .select("id, slug, name, category, owner_id, logo_url, google_review_url, keywords, qr_design, created_at")
+    .select("id, slug, name, category, owner_id, logo_url, google_review_url, keywords, qr_design, created_at, delivery_name, delivery_phone, delivery_address, delivery_city, delivery_state, delivery_pincode")
     .eq("id", id)
     .single<Store>();
 
@@ -143,6 +149,28 @@ export default async function StoreDetailPage({
             </p>
           </div>
         </section>
+
+        {me?.isAdmin && store.delivery_address && (
+          <section className="bg-white rounded-2xl shadow-md p-5 mb-6">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+              📦 Ship printed QR card to
+            </p>
+            <p className="font-semibold text-gray-900">
+              {store.delivery_name || ownerEmail || "—"}
+              {store.delivery_phone && (
+                <span className="font-normal text-gray-600"> · 📞 {store.delivery_phone}</span>
+              )}
+            </p>
+            <p className="text-sm text-gray-700 mt-1 leading-relaxed">
+              {store.delivery_address}
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {[store.delivery_city, store.delivery_state, store.delivery_pincode]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          </section>
+        )}
 
         {store.keywords.length > 0 && (
           <section className="bg-white rounded-2xl shadow-md p-5 mb-6">
