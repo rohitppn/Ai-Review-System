@@ -6,6 +6,7 @@ import { suggestKeywords } from "@/lib/keywordSuggestions";
 import { SOCIALS } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
 import { submitOnboardingAction } from "./actions";
+import PlaceSearch from "./PlaceSearch";
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 const TOTAL_STEPS = 7;
@@ -27,12 +28,14 @@ export default function OnboardingWizard({
   gpayQrSrc,
   adminWhatsapp,
   adminUpiId,
+  googleMapsApiKey,
 }: {
   userEmail: string;
   initialError: string | null;
   gpayQrSrc: string;
   adminWhatsapp: string;
   adminUpiId: string;
+  googleMapsApiKey: string;
 }) {
   const [step, setStep] = useState<Step>(1);
   const [pending, startTransition] = useTransition();
@@ -242,43 +245,14 @@ export default function OnboardingWizard({
           )}
 
           {step === 3 && (
-            <Card title="Your Google review URL" subtitle="The link customers tap to post reviews on Google.">
-              <Field label="Google review URL" required>
-                <input
-                  type="url"
-                  value={googleUrl}
-                  onChange={(e) => setGoogleUrl(e.target.value)}
-                  className="input"
-                  placeholder="https://search.google.com/local/writereview?placeid=..."
-                  required
+            <Card title="Find your store on Google" subtitle="Search and pick — we'll build the review URL for you.">
+              <Field label="Search your business" required>
+                <PlaceSearch
+                  apiKey={googleMapsApiKey}
+                  initialUrl={googleUrl}
+                  onPick={(url) => setGoogleUrl(url)}
                 />
               </Field>
-              <details className="mb-5 text-sm">
-                <summary className="cursor-pointer text-rose-600 font-medium hover:underline">
-                  How do I find this URL?
-                </summary>
-                <ol className="mt-3 space-y-2 text-gray-700 list-decimal list-inside">
-                  <li>
-                    Open{" "}
-                    <a
-                      href="https://developers.google.com/maps/documentation/places/web-service/place-id"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-rose-600 underline"
-                    >
-                      Google Place ID Finder
-                    </a>
-                  </li>
-                  <li>Search your business name → click your listing</li>
-                  <li>
-                    Copy the Place ID (starts with <code className="bg-gray-100 px-1 rounded">ChIJ...</code>)
-                  </li>
-                  <li>
-                    Paste it here:{" "}
-                    <code className="bg-gray-100 px-1 rounded">.../writereview?placeid=YOUR_ID</code>
-                  </li>
-                </ol>
-              </details>
 
               <Field label="SEO keywords" hint={`Pick keywords customers search for. Add your city/area too. AI weaves them into reviews to rank you higher on Google for "${displayCategoryLabel.toLowerCase()}" searches.`}>
                 <div className="flex flex-wrap gap-2 mb-3">
