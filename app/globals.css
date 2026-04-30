@@ -57,3 +57,29 @@ body {
     scrollbar-width: none;
   }
 }
+
+/*
+ * Shared form input class used by PlaceSearch and any other form that
+ * matches the wizard's input styling. Keep this global (not scoped to
+ * styled-jsx) so it works in admin pages too — otherwise PlaceSearch
+ * renders unstyled on /dashboard/stores/new and /dashboard/stores/[id]/edit.
+ */
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  background: #fff;
+  color: #0f0f14;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #fb7185;
+}
+.input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
