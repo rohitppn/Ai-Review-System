@@ -5,6 +5,8 @@ import { CATEGORIES } from "@/lib/categories";
 import { suggestKeywords } from "@/lib/keywordSuggestions";
 import { SOCIALS } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
+import Spinner from "@/components/Spinner";
+import { isGoogleReviewUrl } from "@/lib/googleUrl";
 import { submitOnboardingAction } from "./actions";
 import PlaceSearch from "./PlaceSearch";
 
@@ -102,8 +104,15 @@ export default function OnboardingWizard({
         return alert("Please name your custom category");
       }
     }
-    if (step === 3 && !googleUrl.trim()) {
-      return alert("Google review URL is required");
+    if (step === 3) {
+      if (!googleUrl.trim()) {
+        return alert("Google review URL is required");
+      }
+      if (!isGoogleReviewUrl(googleUrl)) {
+        return alert(
+          "That doesn't look like a Google Maps URL. Use the search above, or paste a link from google.com/maps, maps.app.goo.gl, or g.page."
+        );
+      }
     }
     if (step === 6) {
       if (!delivery.address || !delivery.phone || !delivery.pincode) {
@@ -522,9 +531,13 @@ export default function OnboardingWizard({
                 type="button"
                 onClick={handleFinalSubmit}
                 disabled={pending || submitting}
-                className="px-7 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60"
+                aria-busy={pending || submitting}
+                className="px-7 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {pending || submitting ? "Submitting..." : "I've sent the payment screenshot ✓"}
+                <span className="inline-flex items-center justify-center gap-2">
+                  {(pending || submitting) && <Spinner className="h-4 w-4" />}
+                  {pending || submitting ? "Submitting..." : "I've sent the payment screenshot ✓"}
+                </span>
               </button>
             )}
           </div>

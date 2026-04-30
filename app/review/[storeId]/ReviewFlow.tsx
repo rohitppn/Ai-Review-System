@@ -6,6 +6,7 @@ import { getCategory } from "@/lib/categories";
 import { defaultLogoDataUrl } from "@/lib/defaultLogo";
 import { SOCIALS } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
+import Spinner from "@/components/Spinner";
 
 type Step = "rating" | "tags" | "loading" | "picking" | "done";
 
@@ -17,6 +18,7 @@ export default function ReviewFlow({ store }: { store: Store }) {
   const [reviews, setReviews] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
 
   const category = getCategory(store.category);
   const tagOptions = category.tags;
@@ -55,7 +57,8 @@ export default function ReviewFlow({ store }: { store: Store }) {
   };
 
   const submit = async () => {
-    if (!selected) return;
+    if (!selected || posting) return;
+    setPosting(true);
     try {
       await fetch("/api/submit-review", {
         method: "POST",
@@ -73,6 +76,7 @@ export default function ReviewFlow({ store }: { store: Store }) {
         await navigator.clipboard.writeText(selected);
       } catch {}
     }
+    setPosting(false);
     setStep("done");
   };
 
@@ -111,6 +115,7 @@ export default function ReviewFlow({ store }: { store: Store }) {
             setSelected={setSelected}
             onSubmit={submit}
             onRegenerate={generateReviews}
+            posting={posting}
           />
         )}
 
@@ -313,12 +318,14 @@ function PickStep({
   setSelected,
   onSubmit,
   onRegenerate,
+  posting,
 }: {
   reviews: string[];
   selected: string | null;
   setSelected: (s: string) => void;
   onSubmit: () => void;
   onRegenerate: () => void;
+  posting: boolean;
 }) {
   return (
     <div className="animate-slide-up">
@@ -366,18 +373,23 @@ function PickStep({
       </div>
       <button
         onClick={onSubmit}
-        disabled={!selected}
+        disabled={!selected || posting}
+        aria-busy={posting}
         className={`w-full py-4 rounded-2xl font-semibold transition-all ${
           selected
             ? "bg-gradient-to-r from-amber-500 via-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]"
             : "bg-gray-200 text-gray-400 cursor-not-allowed"
-        }`}
+        } disabled:cursor-not-allowed`}
       >
-        Done
+        <span className="inline-flex items-center justify-center gap-2">
+          {posting && <Spinner className="h-4 w-4" />}
+          {posting ? "Posting…" : "Done"}
+        </span>
       </button>
       <button
         onClick={onRegenerate}
-        className="w-full mt-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+        disabled={posting}
+        className="w-full mt-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         ↻ Generate new options
       </button>

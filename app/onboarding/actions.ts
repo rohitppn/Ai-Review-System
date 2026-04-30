@@ -6,6 +6,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
 import { whatsappToUrl } from "@/lib/social";
+import { isGoogleReviewUrl } from "@/lib/googleUrl";
 
 const QR_DESIGNS = ["classic", "sunset", "midnight"] as const;
 
@@ -62,6 +63,11 @@ export async function submitOnboardingAction(formData: FormData) {
 
   if (!name) return fail("Store name required");
   if (!googleReviewUrl) return fail("Google review URL required");
+  if (!isGoogleReviewUrl(googleReviewUrl)) {
+    return fail(
+      "Google review URL must point to google.com/maps, maps.app.goo.gl, or g.page"
+    );
+  }
   if (category === "other" && !customLabel) {
     return fail("Please name your custom category");
   }
