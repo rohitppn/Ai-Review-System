@@ -19,8 +19,12 @@ export default async function OnboardingPage({
       userEmail={me.email ?? ""}
       initialError={error ?? null}
       gpayQrSrc="/gpay-qr.png"
-      adminWhatsapp="917717766954"
-      adminUpiId="rohitsharmabusy@oksbi"
+      adminWhatsapp={
+        process.env.NEXT_PUBLIC_ADMIN_WHATSAPP ?? "917717766954"
+      }
+      adminUpiId={
+        process.env.NEXT_PUBLIC_ADMIN_UPI_ID ?? "rohitsharmabusy@oksbi"
+      }
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
     />
   );

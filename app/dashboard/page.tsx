@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "../auth/actions";
 import { approveStoreAction, rejectStoreAction } from "../onboarding/actions";
 import { getCategory } from "@/lib/categories";
+import SubmitButton from "@/components/SubmitButton";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,8 @@ type StoreRow = {
 
 export default async function DashboardPage() {
   const me = await getCurrentUser();
+  const adminWhatsapp =
+    process.env.NEXT_PUBLIC_ADMIN_WHATSAPP ?? "917717766954";
 
   const supabase = await supabaseServer();
   const { data: stores } = await supabase
@@ -97,7 +100,7 @@ export default async function DashboardPage() {
                 <p className="text-xs text-gray-500 mt-2">
                   Didn't send the screenshot yet?{" "}
                   <a
-                    href={`https://wa.me/917717766954?text=${encodeURIComponent(
+                    href={`https://wa.me/${adminWhatsapp}?text=${encodeURIComponent(
                       `Hi, I just signed up on Starly with email "${me?.email}" and paid ₹999. Here's my payment screenshot.`
                     )}`}
                     target="_blank"
@@ -282,22 +285,22 @@ function PendingCard({ store }: { store: StoreRow }) {
       <div className="flex gap-2">
         <form action={approveStoreAction} className="flex-1">
           <input type="hidden" name="store_id" value={store.id} />
-          <button
-            type="submit"
+          <SubmitButton
             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold hover:opacity-90 transition active:scale-[0.99]"
+            pendingLabel="Approving…"
           >
             ✓ Approve
-          </button>
+          </SubmitButton>
         </form>
         <form action={rejectStoreAction} className="flex-1">
           <input type="hidden" name="store_id" value={store.id} />
           <input type="hidden" name="reason" value="Payment not verified" />
-          <button
-            type="submit"
+          <SubmitButton
             className="w-full py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition active:scale-[0.99]"
+            pendingLabel="Rejecting…"
           >
             ✕ Reject
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </li>

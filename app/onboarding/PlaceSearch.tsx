@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Spinner from "@/components/Spinner";
+import { isGoogleReviewUrl } from "@/lib/googleUrl";
 
 declare global {
   interface Window {
@@ -121,6 +123,8 @@ export default function PlaceSearch({
   };
 
   if (manualMode || status === "error") {
+    const trimmed = manualUrl.trim();
+    const showInvalidWarning = trimmed.length > 0 && !isGoogleReviewUrl(trimmed);
     return (
       <div>
         <input
@@ -134,13 +138,20 @@ export default function PlaceSearch({
           }}
           className="input"
           placeholder="https://search.google.com/local/writereview?placeid=..."
+          aria-invalid={showInvalidWarning || undefined}
         />
-        {status === "error" && apiKey && (
+        {showInvalidWarning && (
+          <p className="text-xs text-rose-600 mt-1">
+            Doesn't look like a Google URL — try google.com/maps,
+            maps.app.goo.gl, or g.page.
+          </p>
+        )}
+        {!showInvalidWarning && status === "error" && apiKey && (
           <p className="text-xs text-amber-600 mt-1">
             Couldn't load Google search — paste URL manually.
           </p>
         )}
-        {!apiKey && (
+        {!showInvalidWarning && !apiKey && (
           <p className="text-xs text-gray-500 mt-1">
             Paste your Google review URL — see the help link below.
           </p>
@@ -182,14 +193,22 @@ export default function PlaceSearch({
 
   return (
     <div>
-      <input
-        ref={inputRef}
-        type="text"
-        autoComplete="off"
-        className="input"
-        placeholder={status === "loading" ? "Loading search…" : "Type your store name on Google"}
-        disabled={status !== "ready"}
-      />
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          autoComplete="off"
+          className={`input ${status === "loading" ? "pr-10" : ""}`}
+          placeholder={status === "loading" ? "Loading Google search…" : "Type your store name on Google"}
+          disabled={status !== "ready"}
+          aria-busy={status === "loading"}
+        />
+        {status === "loading" && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-rose-500">
+            <Spinner className="h-4 w-4" label="Loading Google search" />
+          </span>
+        )}
+      </div>
       <p className="text-xs text-gray-500 mt-1">
         Start typing your business — Google will suggest matches.{" "}
         <button
