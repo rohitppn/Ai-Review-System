@@ -6,6 +6,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
 import { whatsappToUrl } from "@/lib/social";
+import { isGoogleReviewUrl } from "@/lib/googleUrl";
 
 const QR_DESIGNS = ["classic", "sunset", "midnight"] as const;
 type QrDesign = (typeof QR_DESIGNS)[number];
@@ -118,6 +119,11 @@ export async function createStoreAction(formData: FormData) {
   }
   if (!name) return fail("Store name required");
   if (!googleReviewUrl) return fail("Google review URL required");
+  if (!isGoogleReviewUrl(googleReviewUrl)) {
+    return fail(
+      "Google review URL must point to google.com/maps, maps.app.goo.gl, or g.page"
+    );
+  }
 
   const admin = supabaseAdmin();
 
@@ -192,6 +198,13 @@ export async function updateStoreAction(formData: FormData) {
   if (!googleReviewUrl) {
     return redirect(
       `/dashboard/stores/${id}/edit?error=Google%20review%20URL%20required`
+    );
+  }
+  if (!isGoogleReviewUrl(googleReviewUrl)) {
+    return redirect(
+      `/dashboard/stores/${id}/edit?error=${encodeURIComponent(
+        "Google review URL must point to google.com/maps, maps.app.goo.gl, or g.page"
+      )}`
     );
   }
 

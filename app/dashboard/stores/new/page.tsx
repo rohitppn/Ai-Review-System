@@ -67,7 +67,9 @@ export default async function NewStorePage({
           </p>
         </div>
 
-        <StoreFormFields />
+        <StoreFormFields
+          googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
+        />
 
         <button
           type="submit"
