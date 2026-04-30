@@ -139,16 +139,26 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* Admin: legacy "create store directly" */}
+        {/* Admin: tools row */}
         {me?.isAdmin && (
-          <Link
-            href="/dashboard/stores/new"
-            className="block rounded-2xl border-2 border-dashed border-gray-300 hover:border-rose-400 hover:bg-white/60 transition-all p-5 text-center mb-6"
-          >
-            <span className="text-2xl">＋</span>
-            <p className="font-medium mt-1 text-sm">Add a store manually (admin)</p>
-            <p className="text-xs text-gray-500">Skip the wizard — set owner credentials directly</p>
-          </Link>
+          <div className="grid sm:grid-cols-2 gap-3 mb-6">
+            <Link
+              href="/dashboard/stores/new"
+              className="block rounded-2xl border-2 border-dashed border-gray-300 hover:border-rose-400 hover:bg-white/60 transition-all p-5 text-center"
+            >
+              <span className="text-2xl">＋</span>
+              <p className="font-medium mt-1 text-sm">Add a store manually</p>
+              <p className="text-xs text-gray-500">Skip the wizard — set owner credentials directly</p>
+            </Link>
+            <Link
+              href="/dashboard/showcase"
+              className="block rounded-2xl border-2 border-dashed border-gray-300 hover:border-rose-400 hover:bg-white/60 transition-all p-5 text-center"
+            >
+              <span className="text-2xl">🖼️</span>
+              <p className="font-medium mt-1 text-sm">Manage homepage showcase</p>
+              <p className="text-xs text-gray-500">Upload photos + edit captions for the marketing site</p>
+            </Link>
+          </div>
         )}
 
         {/* Active list */}
