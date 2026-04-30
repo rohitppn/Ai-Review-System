@@ -338,21 +338,7 @@ function CreateForm({ nextSortOrder }: { nextSortOrder: number }) {
         </button>
       </div>
 
-      <style jsx>{`
-        :global(.input) {
-          width: 100%;
-          border-radius: 0.625rem;
-          border: 1px solid #e5e7eb;
-          padding: 0.6rem 0.85rem;
-          font-size: 0.9rem;
-          transition: all 0.15s;
-        }
-        :global(.input:focus) {
-          outline: none;
-          border-color: transparent;
-          box-shadow: 0 0 0 2px #fb7185;
-        }
-      `}</style>
+      {/* .input class lives in app/globals.css */}
     </form>
   );
 }
@@ -555,21 +541,7 @@ function EditForm({
         </div>
       </form>
 
-      <style jsx>{`
-        :global(.input) {
-          width: 100%;
-          border-radius: 0.625rem;
-          border: 1px solid #e5e7eb;
-          padding: 0.6rem 0.85rem;
-          font-size: 0.9rem;
-          transition: all 0.15s;
-        }
-        :global(.input:focus) {
-          outline: none;
-          border-color: transparent;
-          box-shadow: 0 0 0 2px #fb7185;
-        }
-      `}</style>
+      {/* .input class lives in app/globals.css */}
     </li>
   );
 }

@@ -544,21 +544,7 @@ export default function OnboardingWizard({
         </form>
       </div>
 
-      <style jsx>{`
-        :global(.input) {
-          width: 100%;
-          border-radius: 0.75rem;
-          border: 1px solid #e5e7eb;
-          padding: 0.75rem 1rem;
-          font-size: 0.95rem;
-          transition: all 0.15s;
-        }
-        :global(.input:focus) {
-          outline: none;
-          border-color: transparent;
-          box-shadow: 0 0 0 2px #fb7185;
-        }
-      `}</style>
+      {/* .input class lives in app/globals.css so it works in admin forms too. */}
     </main>
   );
 }
