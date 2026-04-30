@@ -1,6 +1,9 @@
+"use client";
+
 import { CATEGORIES } from "@/lib/categories";
 import { SOCIALS, type StoreSocials, whatsappPhoneFromUrl } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
+import PlaceSearch from "@/app/onboarding/PlaceSearch";
 
 const QR_DESIGNS: {
   id: "classic" | "sunset" | "midnight";
@@ -14,6 +17,7 @@ const QR_DESIGNS: {
 
 export default function StoreFormFields({
   defaults,
+  googleMapsApiKey = "",
 }: {
   defaults?: {
     name?: string;
@@ -23,6 +27,7 @@ export default function StoreFormFields({
     keywords?: string[];
     qr_design?: string;
   } & Partial<StoreSocials>;
+  googleMapsApiKey?: string;
 }) {
   const d = defaults ?? {};
   const qrDesign = d.qr_design ?? "classic";
@@ -80,27 +85,16 @@ export default function StoreFormFields({
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Google review URL <span className="text-red-500">*</span>
       </label>
-      <input
-        name="google_review_url"
-        type="url"
-        required
-        defaultValue={d.google_review_url ?? ""}
-        className="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent"
-        placeholder="https://search.google.com/local/writereview?placeid=..."
-      />
-      <p className="text-xs text-gray-500 mb-4">
-        Find Place ID at{" "}
-        <a
-          className="underline"
-          href="https://developers.google.com/maps/documentation/places/web-service/place-id"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Place ID Finder
-        </a>
-        , then format:{" "}
-        <code className="bg-gray-100 px-1 rounded text-[10px]">.../writereview?placeid=YOUR_ID</code>
-      </p>
+      <div className="mb-4">
+        <PlaceSearch
+          apiKey={googleMapsApiKey}
+          initialUrl={d.google_review_url ?? ""}
+          onPick={() => {
+            /* no-op; PlaceSearch already exposes the value via its own
+               name="google_review_url" hidden/visible input */
+          }}
+        />
+      </div>
 
       <label className="block text-sm font-medium text-gray-700 mb-1">
         SEO keywords <span className="text-gray-400 font-normal">(comma separated)</span>

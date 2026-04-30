@@ -64,6 +64,7 @@ export default async function EditStorePage({
         <input type="hidden" name="store_id" value={store.id} />
 
         <StoreFormFields
+          googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
           defaults={{
             name: store.name,
             category: store.category,
