@@ -7,6 +7,7 @@ import { SOCIALS } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
 import Spinner from "@/components/Spinner";
 import { isGoogleReviewUrl } from "@/lib/googleUrl";
+import { QR_POSTER_TEMPLATES, type QrDesignId } from "@/lib/qrTemplates";
 import { submitOnboardingAction } from "./actions";
 import PlaceSearch from "./PlaceSearch";
 
@@ -14,7 +15,7 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 const TOTAL_STEPS = 7;
 const STEP_LABELS = ["Store", "Logo", "Google", "Social", "Design", "Address", "Pay"];
 
-const QR_DESIGNS: {
+const QR_COLOR_DESIGNS: {
   id: "classic" | "sunset" | "midnight";
   label: string;
   preview: { dark: string; light: string };
@@ -54,7 +55,7 @@ export default function OnboardingWizard({
   const [keywords, setKeywords] = useState<string[]>([]);
   const [keywordInput, setKeywordInput] = useState("");
   const [socials, setSocials] = useState<Record<string, string>>({});
-  const [qrDesign, setQrDesign] = useState<"classic" | "sunset" | "midnight">("classic");
+  const [qrDesign, setQrDesign] = useState<QrDesignId>("classic");
   const [delivery, setDelivery] = useState({
     name: "",
     phone: "",
@@ -363,9 +364,13 @@ export default function OnboardingWizard({
           )}
 
           {step === 5 && (
-            <Card title="Pick your QR code design" subtitle="You can change this anytime later.">
-              <div className="grid grid-cols-3 gap-3">
-                {QR_DESIGNS.map((d) => (
+            <Card title="Pick your QR code design" subtitle="You can change this anytime later. Posters can be downloaded as a single printable image once you're approved.">
+              {/* Simple colored QR — just a colored code, no surrounding design. */}
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                Simple colors
+              </p>
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {QR_COLOR_DESIGNS.map((d) => (
                   <button
                     type="button"
                     key={d.id}
@@ -390,6 +395,48 @@ export default function OnboardingWizard({
                       ))}
                     </div>
                     <p className="text-sm font-semibold text-gray-800">{d.label}</p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Branded posters — full-page designs; QR is composited at download time. */}
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                Branded posters
+              </p>
+              <p className="text-[11px] text-gray-500 mb-3">
+                Full-page designs with &quot;Review us on Google&quot; messaging. Print, frame, or stick on the wall.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {QR_POSTER_TEMPLATES.map((t) => (
+                  <button
+                    type="button"
+                    key={t.id}
+                    onClick={() => setQrDesign(t.id)}
+                    className={`rounded-2xl border-2 p-2 transition-all active:scale-95 ${
+                      qrDesign === t.id
+                        ? "border-rose-500 bg-rose-50 shadow-md"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div
+                      className={`w-full aspect-[2/3] rounded-lg overflow-hidden mb-2 ${
+                        t.tone === "dark" ? "bg-gray-900" : "bg-gray-100"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={t.img}
+                        alt={`${t.label} poster preview`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Image hasn't been added to /public/qr-templates/
+                          // yet. Hide gracefully with a placeholder background.
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">{t.label}</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">{t.subtitle}</p>
                   </button>
                 ))}
               </div>

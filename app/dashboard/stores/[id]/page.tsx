@@ -6,7 +6,9 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
 import { getCategory } from "@/lib/categories";
 import { defaultLogoDataUrl } from "@/lib/defaultLogo";
+import { isPosterDesign, getPosterTemplate } from "@/lib/qrTemplates";
 import { deleteStoreAction } from "../../actions";
+import PosterDownload from "./PosterDownload";
 
 export const dynamic = "force-dynamic";
 
@@ -80,12 +82,17 @@ export default async function StoreDetailPage({
   const fourPlus = total ? list.filter((r) => r.rating >= 4).length / total : 0;
 
   const reviewUrl = `${siteUrl()}/review/${store.slug}`;
-  const colors = QR_COLORS[store.qr_design] ?? QR_COLORS.classic;
+  // Simple-color QR for the always-shown raw download. Poster designs
+  // also get a separate branded download via <PosterDownload> below.
+  const isPoster = isPosterDesign(store.qr_design);
+  const colorKey = isPoster ? "classic" : store.qr_design;
+  const colors = QR_COLORS[colorKey] ?? QR_COLORS.classic;
   const qrDataUrl = await QRCode.toDataURL(reviewUrl, {
     width: 600,
     margin: 2,
     color: colors,
   });
+  const poster = isPoster ? getPosterTemplate(store.qr_design) : null;
 
   // For admin viewing someone else's store: pull owner email
   let ownerEmail: string | null = null;
@@ -226,6 +233,22 @@ export default async function StoreDetailPage({
             />
           </div>
         </section>
+
+        {poster && (
+          <section className="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <h2 className="text-lg font-semibold mb-1">Branded poster ({poster.label})</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Your QR composited into the {poster.label.toLowerCase()} template — print and stick it on tables, walls, counters.
+            </p>
+            <PosterDownload
+              designId={store.qr_design}
+              reviewUrl={reviewUrl}
+              logoUrl={store.logo_url}
+              storeName={store.name}
+              storeSlug={store.slug}
+            />
+          </section>
+        )}
 
         <section className="bg-white rounded-2xl shadow-md p-6 mb-6">
           <h2 className="text-lg font-semibold mb-3">Recent reviews</h2>

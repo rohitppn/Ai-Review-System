@@ -4,6 +4,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { SOCIALS, type StoreSocials, whatsappPhoneFromUrl } from "@/lib/social";
 import { getIconById } from "@/components/SocialIcons";
 import PlaceSearch from "@/app/onboarding/PlaceSearch";
+import { QR_POSTER_TEMPLATES } from "@/lib/qrTemplates";
 
 const QR_DESIGNS: {
   id: "classic" | "sunset" | "midnight";
@@ -151,7 +152,8 @@ export default function StoreFormFields({
       </p>
 
       <label className="block text-sm font-medium text-gray-700 mb-2">QR code design</label>
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Simple colors</p>
+      <div className="grid grid-cols-3 gap-3 mb-5">
         {QR_DESIGNS.map((opt) => (
           <label
             key={opt.id}
@@ -172,6 +174,39 @@ export default function StoreFormFields({
                 <div
                   className="w-6 h-6 rounded-sm"
                   style={{ background: opt.preview.dark }}
+                />
+              </div>
+              <p className="text-xs font-medium text-gray-700">{opt.label}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+
+      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Branded posters</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {QR_POSTER_TEMPLATES.map((opt) => (
+          <label key={opt.id} className="cursor-pointer relative">
+            <input
+              type="radio"
+              name="qr_design"
+              value={opt.id}
+              defaultChecked={qrDesign === opt.id}
+              className="peer sr-only"
+            />
+            <div className="rounded-xl border-2 border-gray-200 peer-checked:border-rose-500 peer-checked:bg-rose-50 transition-all p-2 text-center">
+              <div
+                className={`w-full aspect-[2/3] rounded-md overflow-hidden mb-1.5 ${
+                  opt.tone === "dark" ? "bg-gray-900" : "bg-gray-100"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={opt.img}
+                  alt={`${opt.label} poster preview`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
                 />
               </div>
               <p className="text-xs font-medium text-gray-700">{opt.label}</p>

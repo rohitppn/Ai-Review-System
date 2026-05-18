@@ -8,7 +8,12 @@ import { getCurrentUser } from "@/lib/auth";
 import { whatsappToUrl } from "@/lib/social";
 import { isGoogleReviewUrl } from "@/lib/googleUrl";
 
-const QR_DESIGNS = ["classic", "sunset", "midnight"] as const;
+// Valid QR design ids = 3 simple colors + 4 poster templates.
+// See lib/qrTemplates.ts for the canonical list (QR_DESIGN_IDS).
+const QR_DESIGNS = [
+  "classic", "sunset", "midnight",
+  "pop", "neon", "cosmic", "cloud",
+] as const;
 type QrDesign = (typeof QR_DESIGNS)[number];
 
 function slugify(s: string) {
